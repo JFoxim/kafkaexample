@@ -1,0 +1,11 @@
+version: '3'
+services:
+  base-project-pg:
+    image: postgres:14.5-alpine
+    container_name: postgres-liquibase
+    environment:
+      - POSTGRES_DB=testdb
+      - POSTGRES_USER=${POSTGRES_TEST_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_TEST_DB_PASSWORD}
+    ports:
+      - '5432:5432'
