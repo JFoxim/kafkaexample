@@ -15,31 +15,17 @@ import ru.kafkaexample.service.UserService;
 @Slf4j
 @RequiredArgsConstructor
 public class UserKafkaProducer {
-
-    private final KafkaTemplate<String, User> kafkaTemplate;
-
+    private final KafkaConfig kafkaConfig;
+    private final KafkaTemplate<String, User> userKafkaTemplate;
     private final UserService userService;
-
-    @Value("${spring.kafka.topic.name}")
-    private String topic;
-
-    @Value("${spring.kafka.replication.factor:1}")
-    private int replicationFactor;
-
-    @Value("${spring.kafka.partition.number:1}")
-    private int partitionNumber;
 
     public void writeToKafka(User user) {
         log.info("Отправка сообщения в kafka {}", user);
-        kafkaTemplate.send(topic, user.getId().toString(), user);
+        userKafkaTemplate.send(kafkaConfig.getTopicName(), user.getId().toString(), user);
         log.info("Сообщение отправлено: {}", user);
+
         userService.save(user);
         log.info("Сообщение сохранено: {}", user);
     }
 
-    @Bean
-    @Order(-1)
-    public NewTopic createNewTopic() {
-        return new NewTopic(topic, partitionNumber, (short) replicationFactor);
-    }
 }
