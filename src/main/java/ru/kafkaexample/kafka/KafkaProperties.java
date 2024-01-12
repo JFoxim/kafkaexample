@@ -21,4 +21,8 @@ public class KafkaProperties {
     private String producerRetries;
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+    @Value("${user.json.topic.name}")
+    private String userJsonTopicName;
+    @Value("${custom.json.topic.name}")
+    private String customJsonTopicName;
 }

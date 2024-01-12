@@ -16,9 +16,9 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
-//import org.springframework.kafka.test.EmbeddedKafkaBroker;
-//import org.springframework.kafka.test.context.EmbeddedKafka;
-//import org.springframework.kafka.test.utils.ContainerTestUtils;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.kafka.test.utils.ContainerTestUtils;
 
 
 import java.util.Map;
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 //@SpringBootTest(properties = "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}")
 //@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserKafkaProducerTest {
-//
+
 //    private BlockingQueue<ConsumerRecord<String, String>> records;
 //
 //    private KafkaMessageListenerContainer<String, String> container;
@@ -62,7 +62,7 @@ class UserKafkaProducerTest {
 //    @Test
 //    void testWriteToKafka() throws InterruptedException, JsonProcessingException {
 //        // Create a user and write to Kafka
-//        User user = new User("11111", "John", "Wick");
+//        User user = new User(2L, "JW", "John", "Wick", "DJ", "M");
 //        producer.writeToKafka(user);
 //
 //        // Read the message (John Wick user) with a test consumer from Kafka and assert its properties

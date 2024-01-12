@@ -30,11 +30,18 @@ dependencies {
 	implementation("org.postgresql:postgresql:42.6.0")
 	implementation("org.liquibase:liquibase-core:4.20.0")
 
-	//implementation("org.apache.kafka:kafka-clients:2.4.1")
+//	// https://mvnrepository.com/artifact/org.apache.avro/avro
+//	implementation("org.apache.avro:avro:1.11.0")
+//	// https://mvnrepository.com/artifact/io.confluent/kafka-avro-serializer
+//	implementation("io.confluent:kafka-avro-serializer:5.3.0")
+
+
+	implementation("org.apache.kafka:kafka-clients:2.4.1")
 	compileOnly("org.projectlombok:lombok:1.18.22")
 	annotationProcessor("org.projectlombok:lombok:1.18.22")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	//testImplementation("org.springframework.kafka:spring-kafka-test")
+
+	testImplementation("org.springframework.kafka:spring-kafka-test")
 
 	testImplementation("org.testcontainers:kafka:1.16.3")
 	testImplementation("org.testcontainers:junit-jupiter:1.16.3")

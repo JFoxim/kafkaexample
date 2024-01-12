@@ -17,4 +17,18 @@ public class KafkaController {
         return "OK";
     }
 
+    @GetMapping("/kafka/send-json")
+    public String sendJsonKafka() throws InterruptedException {
+        User user = new User(1L, "Ivan", "Иван", "Петров", "Петрович", "М");
+        userKafkaProducer.writeJsonToKafka(user);
+        return "OK";
+    }
+
+    @GetMapping("/kafka/send-custom")
+    public String sendCustomKafka() throws InterruptedException {
+        User user = new User(1L, "Ivan", "Иван", "Петров", "Петрович", "М");
+        userKafkaProducer.writeCustomToKafka(user);
+        return "Custom OK";
+    }
+
 }

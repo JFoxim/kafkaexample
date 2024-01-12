@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 @Testcontainers
 class UserKafkaTestcontainersTest {
     @Container
-    static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:latest"));
+    static KafkaContainer kafkaContainer = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.4.3"));
     private UserService userService = mock(UserService.class);
 
     @Test
@@ -26,7 +26,7 @@ class UserKafkaTestcontainersTest {
         UserKafkaProducer userKafkaProducer = new UserKafkaProducer(kafkaConfig,
                 kafkaConfig.userKafkaTemplate(), userService);
 
-        UserKafkaConsumer userKafkaConsumer = new UserKafkaConsumer(kafkaConfig);
+        //UserKafkaConsumer userKafkaConsumer = new UserKafkaConsumer(kafkaConfig);
 
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
         User user = new User(2L, "JW", "John", "Wick", "DJ", "M");

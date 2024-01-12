@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 public class AppTest {
 
     @Container
-    public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:latest"));
+    public static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:5.4.3"));
 
     private UserService userService = mock(UserService.class);
 

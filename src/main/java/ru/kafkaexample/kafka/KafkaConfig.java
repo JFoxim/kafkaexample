@@ -1,5 +1,6 @@
 package ru.kafkaexample.kafka;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,16 +10,10 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.*;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
@@ -34,6 +29,8 @@ import java.util.Map;
 @EnableConfigurationProperties(KafkaProperties.class)
 public class KafkaConfig {
     private final KafkaProperties kafkaProperties;
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -90,6 +87,14 @@ public class KafkaConfig {
                 (short)kafkaProperties.getReplicationFactor());
     }
 
+    @Bean
+    public NewTopic createUserJsonTopic() {
+        return new NewTopic(
+                kafkaProperties.getUserJsonTopicName(),
+                kafkaProperties.getPartitionNumber(),
+                (short)kafkaProperties.getReplicationFactor());
+    }
+
     public String getTopicName() {
         return  kafkaProperties.getTopicName();
     }
@@ -107,4 +112,58 @@ public class KafkaConfig {
         factory.setConsumerFactory(userConsumerFactory());
         return factory;
     }
+
+    @Bean
+    public ProducerFactory<String, Object> userJsonProducerFactory() {
+        JsonSerializer<Object> jsonSerializer = new JsonSerializer<>();
+        jsonSerializer.setAddTypeInfo(true);
+
+
+        Map<String, Object> configProps = new HashMap<>();
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        //configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        //configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        configProps.put(ProducerConfig.RETRIES_CONFIG, kafkaProperties.getProducerRetries());
+        configProps.put(ProducerConfig.ACKS_CONFIG, kafkaProperties.getProducerAcks());
+        return new DefaultKafkaProducerFactory<>(
+                configProps,
+                new StringSerializer(),
+                jsonSerializer);
+    }
+
+    @Bean
+    public KafkaTemplate<String, Object> userJsonKafkaTemplate() {
+        return new KafkaTemplate<>(userJsonProducerFactory());
+    }
+
+    public String getTopicJsonName() {
+        return  kafkaProperties.getUserJsonTopicName();
+    }
+
+
+
+    public ConsumerFactory<String, Object> userJsonConsumerFactory() {
+       JsonDeserializer<Object> payloadJsonDeserializer = new JsonDeserializer<>();
+       payloadJsonDeserializer.addTrustedPackages("ru.kafkaexample.kafka");
+
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "topic-json-group");
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "ru.kafkaexample.kafka");
+
+        return new DefaultKafkaConsumerFactory<>(
+                props,
+                new StringDeserializer(),
+                payloadJsonDeserializer);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, Object> userJsonKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(userJsonConsumerFactory());
+        return factory;
+    }
+
+
+
 }

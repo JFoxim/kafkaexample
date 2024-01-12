@@ -28,4 +28,24 @@ public class UserKafkaProducer {
         log.info("Сообщение сохранено: {}", user);
     }
 
+    public void writeJsonToKafka(User user) {
+        log.info("Отправка сообщения в kafka {}", user);
+        userKafkaTemplate.send(kafkaConfig.getTopicJsonName(), user.getId().toString(), user);
+        log.info("Сообщение отправлено: {}", user);
+
+        userService.save(user);
+        log.info("Сообщение сохранено: {}", user);
+    }
+
+    public void writeCustomToKafka(User user) {
+        log.info("Отправка сообщения в kafka {}", user);
+        userKafkaTemplate.send(kafkaConfig.getKafkaProperties().getCustomJsonTopicName(),
+                user.getId().toString(),
+                user);
+        log.info("Сообщение отправлено: {}", user);
+
+        userService.save(user);
+        log.info("Сообщение сохранено: {}", user);
+    }
+
 }
