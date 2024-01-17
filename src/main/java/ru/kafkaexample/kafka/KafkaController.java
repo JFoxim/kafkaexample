@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class KafkaController {
     private final UserKafkaProducer userKafkaProducer;
+    private final MyKafkaProducer myKafkaProducer;
 
 
     @GetMapping("/kafka/send")
@@ -29,6 +30,13 @@ public class KafkaController {
         User user = new User(1L, "Ivan", "Иван", "Петров", "Петрович", "М");
         userKafkaProducer.writeCustomToKafka(user);
         return "Custom OK";
+    }
+
+    @GetMapping("/kafka/send-kafka-producer")
+    public String sendKafkaProducer() throws InterruptedException {
+        User user = new User(1L, "Ivan", "Иван", "Петров", "Петрович", "М");
+        myKafkaProducer.sendWithCallBack(user.getId().toString(), user);
+        return "OK sent to my kafka producer";
     }
 
 }

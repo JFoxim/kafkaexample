@@ -21,6 +21,7 @@ import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 @Slf4j
 @Getter
@@ -37,6 +38,17 @@ public class KafkaConfig {
         Map<String, Object> configs = new HashMap<>();
         configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         return new KafkaAdmin(configs);
+    }
+
+    @Bean
+    public org.apache.kafka.clients.producer.KafkaProducer<String, User> createKafkaProducer() {
+        Properties props = new Properties();
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+        props.put(ProducerConfig.RETRIES_CONFIG, kafkaProperties.getProducerRetries());
+        props.put(ProducerConfig.ACKS_CONFIG, kafkaProperties.getProducerAcks());
+        return new org.apache.kafka.clients.producer.KafkaProducer<>(props);
     }
 
     @Bean
@@ -81,10 +93,27 @@ public class KafkaConfig {
         log.info("PartitionNumber {}", kafkaProperties.getPartitionNumber());
         log.info("ReplicationFactor {}", kafkaProperties.getReplicationFactor());
 
+        Map<String, String> map = new HashMap<>();
+        map.put("min.insync.replicas", "2");
+
         return new NewTopic(
                 kafkaProperties.getTopicName(),
                 kafkaProperties.getPartitionNumber(),
-                (short)kafkaProperties.getReplicationFactor());
+                (short)kafkaProperties.getReplicationFactor())
+                .configs(map);
+    }
+
+    @Bean
+    @Order(-1)
+    public NewTopic createPropertiesNewTopic() {
+        Map<String, String> map = new HashMap<>();
+        map.put("min.insync.replicas", "2");
+
+        return new NewTopic(
+                "new_topic_1",
+               3,
+                (short)1)
+                .configs(map);
     }
 
     @Bean
